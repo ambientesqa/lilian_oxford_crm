@@ -1,7 +1,7 @@
-const CACHE_NAME = 'lilian_oxford';
+const CACHE_NAME = 'lilian_oxford_v2'; // Incrementamos a versão para limpar o cache antigo
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
+  './index.html', // (Confirme se o seu HTML principal se chama index.html ou index (7)_5.html)
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -33,12 +33,11 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
 
-// Interceptação de requisições (Estratégia Network First com fallback para Cache)
+// Interceptação de requisições
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Opcional: atualizar o cache dinamicamente se necessário
         return response;
       })
       .catch(() => {
