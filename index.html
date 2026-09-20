@@ -107,24 +107,24 @@
                 </div>
             </div>
             
-            <div class="flex items-center space-x-3">
-                <!-- Botões de Navegação Superior -->
-                <div class="hidden md:flex bg-slate-100 p-1 rounded-xl items-center border border-slate-200 mr-2">
-                    <button onclick="switchMainTab('crm')" id="tabBtnCrm" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center">
-                        <i class="fa-solid fa-users mr-1.5"></i> CRM Leads
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Botões de Navegação Superior (Exibidos em Web e Mobile) -->
+                <div class="flex bg-slate-100 p-1 rounded-xl items-center border border-slate-200 mr-1 sm:mr-2">
+                    <button onclick="switchMainTab('crm')" id="tabBtnCrm" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center">
+                        <i class="fa-solid fa-users mr-1.5"></i> <span class="hidden xs:inline">CRM</span> Leads
                     </button>
-                    <button onclick="switchMainTab('admin')" id="tabBtnAdmin" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center">
-                        <i class="fa-solid fa-city mr-1.5"></i> Empreendimentos
+                    <button onclick="switchMainTab('admin')" id="tabBtnAdmin" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center">
+                        <i class="fa-solid fa-city mr-1.5"></i> <span class="hidden xs:inline">Empreendimentos</span>
                     </button>
                 </div>
 
                 <!-- Botão de Instalação PWA (Aparece dinamicamente) -->
-                <button id="btnInstallPWA" style="display: none;" onclick="installPWA()" class="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                    <i class="fa-solid fa-download mr-2"></i> Instalar App
+                <button id="btnInstallPWA" style="display: none;" onclick="installPWA()" class="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none">
+                    <i class="fa-solid fa-download sm:mr-2"></i> <span class="hidden sm:inline">Instalar App</span>
                 </button>
 
-                <button onclick="openModal()" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
-                    <i class="fa-solid fa-plus mr-2"></i> Novo Lead
+                <button onclick="openModal()" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl shadow-sm transition-all focus:outline-none">
+                    <i class="fa-solid fa-plus sm:mr-2"></i> Novo Lead
                 </button>
 
                 <button onclick="logout()" class="inline-flex items-center justify-center bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 text-sm font-semibold p-2.5 rounded-xl border border-slate-200 transition-all" title="Sair do Sistema">
@@ -235,10 +235,10 @@
 
                     <!-- Toggle Table / Kanban -->
                     <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
-                        <button onclick="switchView('table')" id="btnViewTable" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center">
+                        <button onclick="switchView('table')" id="btnViewTable" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center">
                             <i class="fa-solid fa-table-list mr-1.5"></i> Tabela
                         </button>
-                        <button onclick="switchView('kanban')" id="btnViewKanban" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center">
+                        <button onclick="switchView('kanban')" id="btnViewKanban" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center">
                             <i class="fa-solid fa-columns mr-1.5"></i> Kanban
                         </button>
                     </div>
@@ -248,7 +248,7 @@
             <!-- Views Container -->
             <div id="viewContainer">
                 <!-- Table View -->
-                <div id="tableView" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div id="tableView" class="hidden bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -281,7 +281,7 @@
                 </div>
 
                 <!-- Kanban View -->
-                <div id="kanbanView" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="bg-slate-100/70 rounded-2xl p-4 border border-slate-200 flex flex-col">
                         <div class="flex items-center justify-between mb-3 px-1">
                             <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
@@ -543,7 +543,7 @@
 
         let developments = [];
         let clients = [];
-        let currentView = 'table';
+        let currentView = 'kanban'; // Definido padrão inicial como Kanban
 
         document.addEventListener('DOMContentLoaded', () => {
             // Verificar se já está logado na sessão atual
@@ -562,7 +562,6 @@
             });
         }
 
-        // Lógica para capturar o evento de instalação do PWA
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -595,7 +594,6 @@
             if (installBtn) installBtn.style.display = 'none';
         });
 
-        // Função para alternar a visibilidade da senha (olhinho)
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('loginPass');
             const toggleIcon = document.getElementById('togglePassIcon');
@@ -611,7 +609,6 @@
             }
         }
 
-        // Função de hash SHA-256 nativa para validar a senha do login.js
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -626,7 +623,7 @@
             const errorEl = document.getElementById('loginError');
 
             const hashedPass = await sha256(pass);
-            const adminCredentials = dadosJsonGlobal.admin[1]; // ["admin", "hash..."]
+            const adminCredentials = dadosJsonGlobal.admin[1];
 
             if (user === adminCredentials[0] && hashedPass === adminCredentials[1]) {
                 errorEl.classList.add('hidden');
@@ -648,7 +645,6 @@
             loadDataFromSheet();
         }
 
-        // Carregar Dados do Google Planilhas via GET
         async function loadDataFromSheet() {
             document.getElementById('loadingOverlay').classList.remove('hidden');
             try {
@@ -673,7 +669,6 @@
             }
         }
 
-        // Sincronizar/Gravar dados de uma aba específica no Google Planilhas via POST
         async function syncSheetData(sheetName, rowsData) {
             try {
                 await fetch(WEB_APP_URL, {
@@ -707,13 +702,13 @@
             if (tab === 'crm') {
                 crmView.classList.remove('hidden');
                 adminView.classList.add('hidden');
-                tabCrm.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center";
-                tabAdmin.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center";
+                tabCrm.className = "px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center";
+                tabAdmin.className = "px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center";
             } else {
                 crmView.classList.add('hidden');
                 adminView.classList.remove('hidden');
-                tabAdmin.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center";
-                tabCrm.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center";
+                tabAdmin.className = "px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all flex items-center";
+                tabCrm.className = "px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center";
                 renderDevelopmentsTable();
             }
         }
@@ -1012,6 +1007,9 @@
             renderMetrics();
             renderTable(filtered);
             renderKanban(filtered);
+            
+            // Garante o estado inicial visual correto do Kanban na abertura
+            switchView(currentView);
         }
 
         function renderMetrics() {
