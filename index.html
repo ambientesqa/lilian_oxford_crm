@@ -204,7 +204,7 @@
                 </div>
             </section>
 
-            <!-- Controls: Search, Filters & View Toggle -->
+            <!-- Controls: Search, Filters, Export & View Toggle -->
             <section class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="w-full md:w-80 relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
@@ -214,6 +214,11 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+                    <!-- Novo Filtro por Data -->
+                    <div class="relative flex items-center">
+                        <input type="date" id="filterDate" onchange="filterData()" title="Filtrar por data de contato" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700">
+                    </div>
+
                     <select id="filterNeighborhood" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                         <option value="">Todos os Bairros (SP)</option>
                     </select>
@@ -232,6 +237,16 @@
                         <option value="Médio">Médio</option>
                         <option value="Baixo">Baixo</option>
                     </select>
+
+                    <!-- Botões de Exportação -->
+                    <div class="flex items-center space-x-1.5 border-l border-r border-slate-200 px-3">
+                        <button onclick="exportToExcel()" class="inline-flex items-center bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold px-3 py-2.5 rounded-xl border border-emerald-200 text-xs transition-all" title="Exportar para Excel (.xls)">
+                            <i class="fa-solid fa-file-excel mr-1.5 text-emerald-600"></i> Excel
+                        </button>
+                        <button onclick="exportToPDF()" class="inline-flex items-center bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold px-3 py-2.5 rounded-xl border border-rose-200 text-xs transition-all" title="Exportar para PDF">
+                            <i class="fa-solid fa-file-pdf mr-1.5 text-rose-600"></i> PDF
+                        </button>
+                    </div>
 
                     <!-- Toggle Table / Kanban -->
                     <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
@@ -987,8 +1002,78 @@
             render();
         }
 
+        // Função de Exportação para Excel (.xls) CORRIGIDA COM O HISTÓRICO COMPLETO
+        function exportToExcel() {
+            if (clients.length === 0) {
+                alert("Não há leads cadastrados para exportar.");
+                return;
+            }
+
+            let htmlTable = '<table border="1">';
+            htmlTable += '<tr style="background-color: #4f46e5; color: white; font-weight: bold;">';
+            htmlTable += '<th>Nome</th><th>Contato</th><th>Cidade</th><th>Região</th><th>Bairro</th><th>Empreendimento</th><th>Perfil do Apê</th><th>Histórico de Contatos & Datas</th><th>Nome Limpo</th><th>Docs Enviados</th><th>Nível de Interesse</th><th>Status de Compra</th><th>Estágio</th>';
+            htmlTable += '</tr>';
+
+            clients.forEach(c => {
+                // Formatação do Histórico de Contatos para texto legível dentro da célula do Excel
+                let historyArr = c.contactsHistory;
+                if (typeof historyArr === 'string') { 
+                    try { historyArr = JSON.parse(historyArr); } catch(e) { historyArr = []; } 
+                }
+
+                let historyText = 'Nenhum contato';
+                if (Array.isArray(historyArr) && historyArr.length > 0) {
+                    historyText = historyArr.map((h, idx) => {
+                        const dateFormatted = h.date ? new Date(h.date).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+                        return `[${idx + 1}º Contato: ${dateFormatted} | Sucesso: ${h.success} | Obs: ${h.note || '-'}]`;
+                    }).join(' | ');
+                }
+
+                htmlTable += '<tr>';
+                htmlTable += `<td>${c.name || ''}</td>`;
+                htmlTable += `<td>${c.contact || ''}</td>`;
+                htmlTable += `<td>São Paulo (SP)</td>`;
+                htmlTable += `<td>${c.clientRegion || ''}</td>`;
+                htmlTable += `<td>${c.neighborhood || ''}</td>`;
+                htmlTable += `<td>${c.development || ''}</td>`;
+                htmlTable += `<td>${c.apartmentProfile || ''}</td>`;
+                htmlTable += `<td>${historyText}</td>`;
+                htmlTable += `<td>${c.cleanName || ''}</td>`;
+                htmlTable += `<td>${c.documentsSent || ''}</td>`;
+                htmlTable += `<td>${c.interestLevel || ''}</td>`;
+                htmlTable += `<td>${c.purchaseStatus || ''}</td>`;
+                htmlTable += `<td>${c.stage || ''}</td>`;
+                htmlTable += '</tr>';
+            });
+            htmlTable += '</table>';
+
+            const blob = new Blob(['\ufeff' + htmlTable], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Lilian_Oxford_Leads_${new Date().toISOString().slice(0, 10)}.xls`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Função de Exportação para PDF (Impressão Formatada)
+        function exportToPDF() {
+            if (clients.length === 0) {
+                alert("Não há leads cadastrados para exportar.");
+                return;
+            }
+
+            // Abre a visualização em tabela e aciona o print otimizado para PDF
+            switchView('table');
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+
         function render() {
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const filterDate = document.getElementById('filterDate').value;
             const filterNeighborhood = document.getElementById('filterNeighborhood').value;
             const filterStage = document.getElementById('filterStage').value;
             const filterInterest = document.getElementById('filterInterest').value;
@@ -998,10 +1083,29 @@
                                       c.contact.toLowerCase().includes(searchQuery) || 
                                       c.apartmentProfile.toLowerCase().includes(searchQuery) ||
                                       (c.development && c.development.toLowerCase().includes(searchQuery));
+                
+                // Validação do Filtro por Data (verifica se o cliente possui algum contato na data selecionada)
+                let matchesDate = true;
+                if (filterDate) {
+                    let historyArr = c.contactsHistory;
+                    if (typeof historyArr === 'string') {
+                        try { historyArr = JSON.parse(historyArr); } catch(e) { historyArr = []; }
+                    }
+                    if (Array.isArray(historyArr)) {
+                        matchesDate = historyArr.some(h => {
+                            if (!h.date) return false;
+                            // A data do input é no formato 'YYYY-MM-DD' e o histórico armazena 'YYYY-MM-DDTHH:mm'
+                            return h.date.startsWith(filterDate);
+                        });
+                    } else {
+                        matchesDate = false;
+                    }
+                }
+
                 const matchesNeighborhood = filterNeighborhood ? c.neighborhood === filterNeighborhood : true;
                 const matchesStage = filterStage ? c.stage === filterStage : true;
                 const matchesInterest = filterInterest ? c.interestLevel === filterInterest : true;
-                return matchesSearch && matchesNeighborhood && matchesStage && matchesInterest;
+                return matchesSearch && matchesDate && matchesNeighborhood && matchesStage && matchesInterest;
             });
 
             renderMetrics();
