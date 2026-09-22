@@ -678,12 +678,25 @@
 
         async function syncSheetData(sheetName, rowsData) {
             try {
+                // Garante que todos os clientes tenham o campo de renda,
+                // inclusive os registros antigos que foram criados antes
+                // da inclusão do campo Renda Cliente.
+                let dataToSync = rowsData;
+                if (sheetName === 'Clientes') {
+                    dataToSync = rowsData.map(function (client) {
+                        return {
+                            ...client,
+                            clientIncome: client.clientIncome || ''
+                        };
+                    });
+                }
+
                 await fetch(WEB_APP_URL, {
                     method: "POST",
                     mode: "no-cors",
                     cache: "no-cache",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sheetName: sheetName, rows: rowsData })
+                    body: JSON.stringify({ sheetName: sheetName, rows: dataToSync })
                 });
             } catch (error) {
                 console.error("Erro ao sincronizar com a planilha:", error);
