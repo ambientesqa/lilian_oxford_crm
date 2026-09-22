@@ -241,10 +241,6 @@
                         <input type="date" id="filterDate" onchange="filterData()" title="Filtrar por data de contato" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700">
                     </div>
 
-                    <select id="filterNeighborhood" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="">Todos os Bairros (SP)</option>
-                    </select>
-
                     <select id="filterStage" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                         <option value="">Todos os Estágios</option>
                         <option value="Prospecção">Prospecção</option>
@@ -258,6 +254,16 @@
                         <option value="Alto">Alto</option>
                         <option value="Médio">Médio</option>
                         <option value="Baixo">Baixo</option>
+                    </select>
+
+                    <select id="filterRegion" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="">Região de Interesse (Todas)</option>
+                        <option value="Zona Central">Zona Central</option>
+                        <option value="Zona Leste">Zona Leste</option>
+                        <option value="Zona Norte">Zona Norte</option>
+                        <option value="Zona Noroeste">Zona Noroeste</option>
+                        <option value="Zona Oeste">Zona Oeste</option>
+                        <option value="Zona Sul">Zona Sul</option>
                     </select>
 
                     <div class="flex items-center space-x-1.5 border-l border-r border-slate-200 px-3">
@@ -291,9 +297,7 @@
                                     <th class="py-4 px-6">Cliente</th>
                                     <th class="py-4 px-6">Contato / Telefone</th>
                                     <th class="py-4 px-6">Renda Cliente</th>
-                                    <th class="py-4 px-6">Bairro / Região (SP)</th>
-                                    <th class="py-4 px-6">Disponibilidade</th>
-                                    <th class="py-4 px-6">Empreendimento Desejado</th>
+                                    <th class="py-4 px-6">Região de Interesse</th>
                                     <th class="py-4 px-6">Perfil do Apê</th>
                                     <th class="py-4 px-6">Histórico de Contatos & Datas</th>
                                     <th class="py-4 px-6">Nome Limpo & Docs</th>
@@ -449,14 +453,14 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Cidade (Fixa)</label>
                         <input type="text" disabled value="São Paulo (SP)" class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 cursor-not-allowed">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Região de Interesse *</label>
-                        <select id="clientRegion" required onchange="updateNeighborhoodOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <select id="clientRegion" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                             <option value="">Selecione a Região...</option>
                             <option value="Zona Central">Zona Central</option>
                             <option value="Zona Leste">Zona Leste</option>
@@ -466,21 +470,9 @@
                             <option value="Zona Sul">Zona Sul</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Bairro de Interesse *</label>
-                        <select id="neighborhood" required onchange="updateDevelopmentOptions()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <option value="">Selecione a região primeiro...</option>
-                        </select>
-                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Disponibilidade / Empreendimentos da Região</label>
-                        <select id="developmentSelect" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <option value="">Selecione a região/bairro primeiro...</option>
-                        </select>
-                    </div>
+                <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Detalhes / Perfil do Apê *</label>
                         <input type="text" id="apartmentProfile" required placeholder="Ex: 3 quartos, 2 vagas (Até 700k)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
@@ -685,8 +677,19 @@
                 if (sheetName === 'Clientes') {
                     dataToSync = rowsData.map(function (client) {
                         return {
-                            ...client,
-                            clientIncome: client.clientIncome || ''
+                            id: client.id || '',
+                            name: client.name || '',
+                            contact: client.contact || '',
+                            clientIncome: client.clientIncome || '',
+                            city: client.city || 'São Paulo',
+                            clientRegion: client.clientRegion || '',
+                            apartmentProfile: client.apartmentProfile || '',
+                            contactsHistory: client.contactsHistory || [],
+                            cleanName: client.cleanName || '',
+                            documentsSent: client.documentsSent || '',
+                            purchaseStatus: client.purchaseStatus || '',
+                            interestLevel: client.interestLevel || '',
+                            stage: client.stage || ''
                         };
                     });
                 }
@@ -704,11 +707,10 @@
         }
 
         function populateNeighborhoodSelects() {
-            const filterSelect = document.getElementById('filterNeighborhood');
             const devSelect = document.getElementById('devNeighborhood');
+            if (!devSelect) return;
 
             spNeighborhoods.forEach(n => {
-                filterSelect.innerHTML += `<option value="${n}">${n}</option>`;
                 devSelect.innerHTML += `<option value="${n}">${n}</option>`;
             });
         }
@@ -920,9 +922,6 @@
                     document.getElementById('clientIncome').value = formatCurrencyBR(client.clientIncome || '');
                     document.getElementById('clientRegion').value = client.clientRegion || '';
                     
-                    updateNeighborhoodOptions(client.neighborhood || '');
-                    updateDevelopmentOptions(client.development);
-
                     document.getElementById('apartmentProfile').value = client.apartmentProfile;
                     document.getElementById('cleanName').value = client.cleanName;
                     document.getElementById('documentsSent').value = client.documentsSent;
@@ -942,8 +941,6 @@
                 }
             } else {
                 title.innerHTML = `<i class="fa-solid fa-user-plus text-brand-600 mr-2"></i> Cadastrar Novo Cliente`;
-                document.getElementById('neighborhood').innerHTML = '<option value="">Selecione a região primeiro...</option>';
-                document.getElementById('developmentSelect').innerHTML = '<option value="">Selecione a região/bairro primeiro...</option>';
                 addContactHistoryRow();
             }
 
@@ -967,6 +964,8 @@
                 if (date) contactsHistory.push({ date, success, note });
             });
 
+            const existingClient = id ? clients.find(c => c.id == id) : null;
+
             const clientData = {
                 id: id ? id : Date.now().toString(),
                 name: document.getElementById('name').value,
@@ -974,8 +973,6 @@
                 clientIncome: document.getElementById('clientIncome').value,
                 city: 'São Paulo',
                 clientRegion: document.getElementById('clientRegion').value,
-                neighborhood: document.getElementById('neighborhood').value,
-                development: document.getElementById('developmentSelect').value,
                 apartmentProfile: document.getElementById('apartmentProfile').value,
                 contactsHistory: contactsHistory,
                 cleanName: document.getElementById('cleanName').value,
@@ -1036,8 +1033,7 @@
             }
 
             const headers = [
-                "Nome", "Contato", "Renda Cliente", "Cidade", "Região", "Bairro",
-                "Empreendimento", "Perfil do Apê", "Histórico de Contatos",
+                "Nome", "Contato", "Renda Cliente", "Cidade", "Região", "Perfil do Apê", "Histórico de Contatos",
                 "Nome Limpo", "Docs Enviados", "Nível de Interesse", "Status de Compra", "Estágio"
             ];
 
@@ -1069,8 +1065,6 @@
                     c.clientIncome || '',
                     'São Paulo (SP)',
                     c.clientRegion || '',
-                    c.neighborhood || '',
-                    c.development || '',
                     c.apartmentProfile || '',
                     historyText,
                     c.cleanName || '',
@@ -1144,15 +1138,15 @@
         function render() {
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const filterDate = document.getElementById('filterDate').value;
-            const filterNeighborhood = document.getElementById('filterNeighborhood').value;
             const filterStage = document.getElementById('filterStage').value;
             const filterInterest = document.getElementById('filterInterest').value;
+            const filterRegion = document.getElementById('filterRegion').value;
 
             const filtered = clients.filter(c => {
                 const matchesSearch = c.name.toLowerCase().includes(searchQuery) || 
                                       c.contact.toLowerCase().includes(searchQuery) || 
                                       c.apartmentProfile.toLowerCase().includes(searchQuery) ||
-                                      (c.development && c.development.toLowerCase().includes(searchQuery));
+                                      false;
                 
                 let matchesDate = true;
                 if (filterDate) {
@@ -1170,10 +1164,10 @@
                     }
                 }
 
-                const matchesNeighborhood = filterNeighborhood ? c.neighborhood === filterNeighborhood : true;
                 const matchesStage = filterStage ? c.stage === filterStage : true;
                 const matchesInterest = filterInterest ? c.interestLevel === filterInterest : true;
-                return matchesSearch && matchesDate && matchesNeighborhood && matchesStage && matchesInterest;
+                const matchesRegion = filterRegion ? c.clientRegion === filterRegion : true;
+                return matchesSearch && matchesDate && matchesStage && matchesInterest && matchesRegion;
             });
 
             renderMetrics();
@@ -1259,17 +1253,8 @@
                     <td class="py-4 px-6 text-slate-700 font-semibold whitespace-nowrap">
                         ${c.clientIncome || 'Não informado'}
                     </td>
-                    <td class="py-4 px-6">
-                        <div class="text-xs font-semibold text-slate-700">${c.neighborhood || 'Não informado'}</div>
-                        <div class="text-[11px] text-slate-400">${c.clientRegion || ''}</div>
-                    </td>
-                    <td class="py-4 px-6">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <i class="fa-solid fa-check-circle mr-1"></i> Disponível
-                        </span>
-                    </td>
-                    <td class="py-4 px-6 font-medium text-slate-800">
-                        <i class="fa-solid fa-building text-brand-500 mr-1 text-xs"></i> ${c.development || 'Não vinculado'}
+                    <td class="py-4 px-6 text-slate-700 font-medium">
+                        ${c.clientRegion || 'Não informado'}
                     </td>
                     <td class="py-4 px-6 text-slate-600">${c.apartmentProfile}</td>
                     <td class="py-4 px-6 min-w-[220px]">${historyHtml}</td>
@@ -1322,10 +1307,7 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${interestClass}">Int. ${c.interestLevel}</span>
                         </div>
                         <div class="text-xs text-brand-700 font-medium">
-                            <i class="fa-solid fa-location-dot mr-1"></i> ${c.neighborhood || 'Não informado'} <span class="text-slate-400">(${c.clientRegion || ''})</span>
-                        </div>
-                        <div class="text-xs text-slate-700 font-semibold bg-brand-50 p-1.5 rounded border border-brand-100">
-                            <i class="fa-solid fa-building text-brand-600 mr-1"></i> ${c.development || 'Nenhum empreendimento'}
+                            <i class="fa-solid fa-location-dot mr-1"></i> ${c.clientRegion || 'Região não informada'}
                         </div>
                         <p class="text-xs text-slate-600"><i class="fa-solid fa-house text-slate-400 mr-1"></i> ${c.apartmentProfile}</p>
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
