@@ -290,6 +290,7 @@
                                 <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                     <th class="py-4 px-6">Cliente</th>
                                     <th class="py-4 px-6">Contato / Telefone</th>
+                                    <th class="py-4 px-6">Renda Cliente</th>
                                     <th class="py-4 px-6">Bairro / Região (SP)</th>
                                     <th class="py-4 px-6">Disponibilidade</th>
                                     <th class="py-4 px-6">Empreendimento Desejado</th>
@@ -433,7 +434,7 @@
             <form id="clientForm" onsubmit="saveClient(event)" class="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
                 <input type="hidden" id="clientId">
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Nome Completo *</label>
                         <input type="text" id="name" required placeholder="Ex: Carlos Alberto" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
@@ -441,6 +442,10 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Contato / Telefone *</label>
                         <input type="text" id="contact" required placeholder="(11) 98888-7777" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Renda Cliente</label>
+                        <input type="text" id="clientIncome" inputmode="decimal" placeholder="Ex: R$ 5.000,00" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
                     </div>
                 </div>
 
@@ -569,7 +574,27 @@
         let clients = [];
         let currentView = 'kanban';
 
+        function formatCurrencyBR(value) {
+            const digits = String(value ?? '').replace(/\D/g, '');
+            if (!digits) return '';
+
+            const number = parseInt(digits, 10) / 100;
+            return number.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            const incomeInput = document.getElementById('clientIncome');
+            if (incomeInput) {
+                incomeInput.addEventListener('input', function () {
+                    this.value = formatCurrencyBR(this.value);
+                });
+            }
+
             if (sessionStorage.getItem('crm_logged') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 initApp();
@@ -879,6 +904,7 @@
                     document.getElementById('clientId').value = client.id;
                     document.getElementById('name').value = client.name;
                     document.getElementById('contact').value = client.contact;
+                    document.getElementById('clientIncome').value = formatCurrencyBR(client.clientIncome || '');
                     document.getElementById('clientRegion').value = client.clientRegion || '';
                     
                     updateNeighborhoodOptions(client.neighborhood || '');
@@ -932,6 +958,7 @@
                 id: id ? id : Date.now().toString(),
                 name: document.getElementById('name').value,
                 contact: document.getElementById('contact').value,
+                clientIncome: document.getElementById('clientIncome').value,
                 city: 'São Paulo',
                 clientRegion: document.getElementById('clientRegion').value,
                 neighborhood: document.getElementById('neighborhood').value,
@@ -996,7 +1023,7 @@
             }
 
             const headers = [
-                "Nome", "Contato", "Cidade", "Região", "Bairro",
+                "Nome", "Contato", "Renda Cliente", "Cidade", "Região", "Bairro",
                 "Empreendimento", "Perfil do Apê", "Histórico de Contatos",
                 "Nome Limpo", "Docs Enviados", "Nível de Interesse", "Status de Compra", "Estágio"
             ];
@@ -1026,6 +1053,7 @@
                 rows.push([
                     c.name || '',
                     c.contact || '',
+                    c.clientIncome || '',
                     'São Paulo (SP)',
                     c.clientRegion || '',
                     c.neighborhood || '',
@@ -1047,7 +1075,7 @@
                 // Mantém as colunas legíveis no Desktop e no Mobile.
                 worksheet['!cols'] = [
                     { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 18 },
-                    { wch: 22 }, { wch: 30 }, { wch: 35 }, { wch: 65 },
+                    { wch: 18 }, { wch: 22 }, { wch: 30 }, { wch: 35 }, { wch: 65 },
                     { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 22 }
                 ];
 
@@ -1214,6 +1242,9 @@
                     </td>
                     <td class="py-4 px-6 text-slate-600 font-medium">
                         <a href="tel:${c.contact}" class="hover:text-brand-600"><i class="fa-solid fa-phone text-xs mr-2 text-slate-400"></i> ${c.contact}</a>
+                    </td>
+                    <td class="py-4 px-6 text-slate-700 font-semibold whitespace-nowrap">
+                        ${c.clientIncome || 'Não informado'}
                     </td>
                     <td class="py-4 px-6">
                         <div class="text-xs font-semibold text-slate-700">${c.neighborhood || 'Não informado'}</div>
