@@ -233,7 +233,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" id="searchInput" oninput="filterData()" placeholder="Buscar por nome, contato ou perfil..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                    <input type="text" id="searchInput" oninput="filterData()" placeholder="Buscar por nome, contato, renda, região, observações..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
@@ -241,12 +241,25 @@
                         <input type="date" id="filterDate" onchange="filterData()" title="Filtrar por data de contato" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700">
                     </div>
 
+                    <select id="filterRegion" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="">Todas as Regiões</option>
+                        <option value="Zona Central">Zona Central</option>
+                        <option value="Zona Leste">Zona Leste</option>
+                        <option value="Zona Norte">Zona Norte</option>
+                        <option value="Zona Noroeste">Zona Noroeste</option>
+                        <option value="Zona Oeste">Zona Oeste</option>
+                        <option value="Zona Sul">Zona Sul</option>
+                    </select>
+
                     <select id="filterStage" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                         <option value="">Todos os Estágios</option>
                         <option value="Prospecção">Prospecção</option>
                         <option value="Contato Realizado">Contato Realizado</option>
                         <option value="Documentação">Documentação</option>
                         <option value="Fechado">Fechado</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Reprovado">Reprovado</option>
+                        <option value="Sem Interesse">Sem Interesse</option>
                     </select>
 
                     <select id="filterInterest" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -254,16 +267,6 @@
                         <option value="Alto">Alto</option>
                         <option value="Médio">Médio</option>
                         <option value="Baixo">Baixo</option>
-                    </select>
-
-                    <select id="filterRegion" onchange="filterData()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="">Região de Interesse (Todas)</option>
-                        <option value="Zona Central">Zona Central</option>
-                        <option value="Zona Leste">Zona Leste</option>
-                        <option value="Zona Norte">Zona Norte</option>
-                        <option value="Zona Noroeste">Zona Noroeste</option>
-                        <option value="Zona Oeste">Zona Oeste</option>
-                        <option value="Zona Sul">Zona Sul</option>
                     </select>
 
                     <div class="flex items-center space-x-1.5 border-l border-r border-slate-200 px-3">
@@ -298,9 +301,9 @@
                                     <th class="py-4 px-6">Contato / Telefone</th>
                                     <th class="py-4 px-6">Renda Cliente</th>
                                     <th class="py-4 px-6">Região de Interesse</th>
-                                    <th class="py-4 px-6">Perfil do Apê</th>
+                                    <th class="py-4 px-6">Observações</th>
                                     <th class="py-4 px-6">Histórico de Contatos & Datas</th>
-                                    <th class="py-4 px-6">Nome Limpo & Docs</th>
+                                    <th class="py-4 px-6 min-w-[180px]">Nome Limpo & Docs</th>
                                     <th class="py-4 px-6">Interesse / Compra</th>
                                     <th class="py-4 px-6">Estágio</th>
                                     <th class="py-4 px-6 text-right no-print">Ações</th>
@@ -318,45 +321,27 @@
                 </div>
 
                 <!-- Kanban View -->
-                <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-slate-100/70 rounded-2xl p-4 border border-slate-200 flex flex-col">
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2"></span> Prospecção
-                            </h4>
-                            <span id="countProspection" class="text-xs font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full shadow-xs border border-slate-200">0</span>
-                        </div>
-                        <div id="kanbanProspection" class="space-y-3 flex-1 min-h-[250px]"></div>
+                <div id="kanbanView" class="flex gap-3 overflow-x-auto pb-2">
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Prospecção</h4><span id="countProspection" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanProspection" class="space-y-2 flex-1 min-h-[180px]"></div>
                     </div>
-
-                    <div class="bg-slate-100/70 rounded-2xl p-4 border border-slate-200 flex flex-col">
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-2"></span> Contato Realizado
-                            </h4>
-                            <span id="countContact" class="text-xs font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full shadow-xs border border-slate-200">0</span>
-                        </div>
-                        <div id="kanbanContact" class="space-y-3 flex-1 min-h-[250px]"></div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Contato Realizado</h4><span id="countContact" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanContact" class="space-y-2 flex-1 min-h-[180px]"></div>
                     </div>
-
-                    <div class="bg-slate-100/70 rounded-2xl p-4 border border-slate-200 flex flex-col">
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                                <span class="w-2.5 h-2.5 rounded-full bg-purple-500 mr-2"></span> Documentação
-                            </h4>
-                            <span id="countDocs" class="text-xs font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full shadow-xs border border-slate-200">0</span>
-                        </div>
-                        <div id="kanbanDocs" class="space-y-3 flex-1 min-h-[250px]"></div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Documentação</h4><span id="countDocs" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanDocs" class="space-y-2 flex-1 min-h-[180px]"></div>
                     </div>
-
-                    <div class="bg-slate-100/70 rounded-2xl p-4 border border-slate-200 flex flex-col">
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2"></span> Fechado
-                            </h4>
-                            <span id="countClosed" class="text-xs font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full shadow-xs border border-slate-200">0</span>
-                        </div>
-                        <div id="kanbanClosed" class="space-y-3 flex-1 min-h-[250px]"></div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Fechado</h4><span id="countClosed" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanClosed" class="space-y-2 flex-1 min-h-[180px]"></div>
+                    </div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Aprovado</h4><span id="countApproved" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanApproved" class="space-y-2 flex-1 min-h-[180px]"></div>
+                    </div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Reprovado</h4><span id="countRejected" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanRejected" class="space-y-2 flex-1 min-h-[180px]"></div>
+                    </div>
+                    <div class="bg-slate-100/70 rounded-xl p-3 border border-slate-200 flex flex-col shrink-0 w-[190px]">
+                        <div class="flex items-center justify-between mb-2 px-1"><h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Sem Interesse</h4><span id="countNoInterest" class="text-[11px] font-bold bg-white text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">0</span></div><div id="kanbanNoInterest" class="space-y-2 flex-1 min-h-[180px]"></div>
                     </div>
                 </div>
             </div>
@@ -423,6 +408,21 @@
 
     </main>
 
+    <!-- Modal de Cliente Duplicado -->
+    <div id="duplicateClientModal" class="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-amber-50/70">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center"><i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Cliente já cadastrado</h3>
+                <button type="button" onclick="closeDuplicateModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-white transition-all"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-600 mb-4">Já existe este cliente no CRM pelo <strong>nome</strong> ou <strong>telefone</strong>. Selecione um cadastro abaixo para editar.</p>
+                <div id="duplicateClientsList" class="space-y-3 max-h-80 overflow-y-auto"></div>
+                <div class="mt-5 flex justify-end"><button type="button" onclick="closeDuplicateModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50">Fechar</button></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Cadastro / Edição de Cliente -->
     <div id="clientModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden border border-slate-100 transform transition-all">
@@ -472,11 +472,9 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Detalhes / Perfil do Apê *</label>
-                        <input type="text" id="apartmentProfile" required placeholder="Ex: 3 quartos, 2 vagas (Até 700k)" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white">
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Observações</label>
+                    <textarea id="observations" rows="3" placeholder="Digite observações importantes sobre o cliente..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white"></textarea>
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-3">
@@ -529,6 +527,9 @@
                             <option value="Contato Realizado">Contato Realizado</option>
                             <option value="Documentação">Documentação</option>
                             <option value="Fechado">Fechado</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Reprovado">Reprovado</option>
+                            <option value="Sem Interesse">Sem Interesse</option>
                         </select>
                     </div>
                 </div>
@@ -566,27 +567,7 @@
         let clients = [];
         let currentView = 'kanban';
 
-        function formatCurrencyBR(value) {
-            const digits = String(value ?? '').replace(/\D/g, '');
-            if (!digits) return '';
-
-            const number = parseInt(digits, 10) / 100;
-            return number.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            const incomeInput = document.getElementById('clientIncome');
-            if (incomeInput) {
-                incomeInput.addEventListener('input', function () {
-                    this.value = formatCurrencyBR(this.value);
-                });
-            }
-
             if (sessionStorage.getItem('crm_logged') === 'true') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 initApp();
@@ -655,7 +636,7 @@
                     return;
                 }
 
-                clients = data.clients || [];
+                clients = (data.clients || []).map(c => { delete c.apartmentProfile; return c; });
                 developments = data.developments || [];
 
                 render();
@@ -670,36 +651,12 @@
 
         async function syncSheetData(sheetName, rowsData) {
             try {
-                // Garante que todos os clientes tenham o campo de renda,
-                // inclusive os registros antigos que foram criados antes
-                // da inclusão do campo Renda Cliente.
-                let dataToSync = rowsData;
-                if (sheetName === 'Clientes') {
-                    dataToSync = rowsData.map(function (client) {
-                        return {
-                            id: client.id || '',
-                            name: client.name || '',
-                            contact: client.contact || '',
-                            clientIncome: client.clientIncome || '',
-                            city: client.city || 'São Paulo',
-                            clientRegion: client.clientRegion || '',
-                            apartmentProfile: client.apartmentProfile || '',
-                            contactsHistory: client.contactsHistory || [],
-                            cleanName: client.cleanName || '',
-                            documentsSent: client.documentsSent || '',
-                            purchaseStatus: client.purchaseStatus || '',
-                            interestLevel: client.interestLevel || '',
-                            stage: client.stage || ''
-                        };
-                    });
-                }
-
                 await fetch(WEB_APP_URL, {
                     method: "POST",
                     mode: "no-cors",
                     cache: "no-cache",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sheetName: sheetName, rows: dataToSync })
+                    body: JSON.stringify({ sheetName: sheetName, rows: rowsData })
                 });
             } catch (error) {
                 console.error("Erro ao sincronizar com a planilha:", error);
@@ -709,7 +666,6 @@
         function populateNeighborhoodSelects() {
             const devSelect = document.getElementById('devNeighborhood');
             if (!devSelect) return;
-
             spNeighborhoods.forEach(n => {
                 devSelect.innerHTML += `<option value="${n}">${n}</option>`;
             });
@@ -919,10 +875,10 @@
                     document.getElementById('clientId').value = client.id;
                     document.getElementById('name').value = client.name;
                     document.getElementById('contact').value = client.contact;
-                    document.getElementById('clientIncome').value = formatCurrencyBR(client.clientIncome || '');
+                    document.getElementById('clientIncome').value = client.clientIncome || '';
                     document.getElementById('clientRegion').value = client.clientRegion || '';
                     
-                    document.getElementById('apartmentProfile').value = client.apartmentProfile;
+                    document.getElementById('observations').value = client.observations || '';
                     document.getElementById('cleanName').value = client.cleanName;
                     document.getElementById('documentsSent').value = client.documentsSent;
                     document.getElementById('purchaseStatus').value = client.purchaseStatus;
@@ -951,9 +907,74 @@
             document.getElementById('clientModal').classList.add('hidden');
         }
 
+        function formatCurrencyBR(value) {
+            const digits = String(value ?? '').replace(/\D/g, '');
+            if (!digits) return '';
+            const number = parseInt(digits, 10) / 100;
+            return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function normalizeDuplicateValue(value) {
+            return String(value ?? '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function normalizePhone(value) {
+            return String(value ?? '').replace(/\D/g, '');
+        }
+
+        function showDuplicateClients(matches) {
+            const container = document.getElementById('duplicateClientsList');
+            container.innerHTML = '';
+            matches.forEach(client => {
+                const item = document.createElement('div');
+                item.className = 'border border-slate-200 rounded-xl p-4 hover:border-brand-300 hover:bg-brand-50/40 transition-all';
+                item.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="font-bold text-slate-900">${client.name || 'Nome não informado'}</div>
+                            <div class="text-sm text-slate-500 mt-1"><i class="fa-solid fa-phone mr-1"></i>${client.contact || 'Telefone não informado'}</div>
+                            <div class="text-xs text-slate-400 mt-1">${client.clientRegion || ''}</div>
+                        </div>
+                        <button type="button" onclick="editDuplicateClient('${client.id}')" class="shrink-0 bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-lg text-xs font-semibold">Editar</button>
+                    </div>`;
+                container.appendChild(item);
+            });
+            document.getElementById('duplicateClientModal').classList.remove('hidden');
+        }
+
+        function closeDuplicateModal() {
+            document.getElementById('duplicateClientModal').classList.add('hidden');
+        }
+
+        function editDuplicateClient(id) {
+            closeDuplicateModal();
+            closeModal();
+            setTimeout(() => openModal(id), 50);
+        }
+
         function saveClient(event) {
             event.preventDefault();
             const id = document.getElementById('clientId').value;
+
+            const normalizedName = normalizeDuplicateValue(document.getElementById('name').value);
+            const normalizedContact = normalizePhone(document.getElementById('contact').value);
+            const duplicates = clients.filter(c => {
+                if (id && String(c.id) === String(id)) return false;
+                const sameName = normalizedName && normalizeDuplicateValue(c.name) === normalizedName;
+                const existingPhone = normalizePhone(c.contact);
+                const samePhone = normalizedContact && existingPhone && existingPhone === normalizedContact;
+                return sameName || samePhone;
+            });
+
+            if (duplicates.length > 0) {
+                showDuplicateClients(duplicates);
+                return;
+            }
 
             const historyRows = document.querySelectorAll('#contactHistoryContainer > div');
             const contactsHistory = [];
@@ -964,8 +985,6 @@
                 if (date) contactsHistory.push({ date, success, note });
             });
 
-            const existingClient = id ? clients.find(c => c.id == id) : null;
-
             const clientData = {
                 id: id ? id : Date.now().toString(),
                 name: document.getElementById('name').value,
@@ -973,7 +992,7 @@
                 clientIncome: document.getElementById('clientIncome').value,
                 city: 'São Paulo',
                 clientRegion: document.getElementById('clientRegion').value,
-                apartmentProfile: document.getElementById('apartmentProfile').value,
+                observations: document.getElementById('observations').value,
                 contactsHistory: contactsHistory,
                 cleanName: document.getElementById('cleanName').value,
                 documentsSent: document.getElementById('documentsSent').value,
@@ -1006,6 +1025,11 @@
             render();
         }
 
+        const incomeInput = document.getElementById('clientIncome');
+        if (incomeInput) {
+            incomeInput.addEventListener('input', function () { this.value = formatCurrencyBR(this.value); });
+        }
+
         // EXPORTAÇÃO EXCEL COMPATÍVEL COM DESKTOP E MOBILE (HTML XML)
         async function exportToExcel() {
             if (clients.length === 0) {
@@ -1033,7 +1057,8 @@
             }
 
             const headers = [
-                "Nome", "Contato", "Renda Cliente", "Cidade", "Região", "Perfil do Apê", "Histórico de Contatos",
+                "Nome", "Contato", "Renda Cliente", "Cidade", "Região",
+                "Observações", "Histórico de Contatos",
                 "Nome Limpo", "Docs Enviados", "Nível de Interesse", "Status de Compra", "Estágio"
             ];
 
@@ -1065,7 +1090,7 @@
                     c.clientIncome || '',
                     'São Paulo (SP)',
                     c.clientRegion || '',
-                    c.apartmentProfile || '',
+                    c.observations || '',
                     historyText,
                     c.cleanName || '',
                     c.documentsSent || '',
@@ -1138,15 +1163,35 @@
         function render() {
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const filterDate = document.getElementById('filterDate').value;
+            const filterRegion = document.getElementById('filterRegion') ? document.getElementById('filterRegion').value : '';
             const filterStage = document.getElementById('filterStage').value;
             const filterInterest = document.getElementById('filterInterest').value;
-            const filterRegion = document.getElementById('filterRegion').value;
+
+            const normalizeSearch = (value) => String(value ?? '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+
+            const normalizedSearchQuery = normalizeSearch(searchQuery);
 
             const filtered = clients.filter(c => {
-                const matchesSearch = c.name.toLowerCase().includes(searchQuery) || 
-                                      c.contact.toLowerCase().includes(searchQuery) || 
-                                      c.apartmentProfile.toLowerCase().includes(searchQuery) ||
-                                      false;
+                const searchableFields = [
+                    c.name,
+                    c.contact,
+                    c.clientIncome,
+                    c.clientRegion,
+                    c.observations,
+                    c.cleanName,
+                    c.documentsSent,
+                    c.purchaseStatus,
+                    c.interestLevel,
+                    c.stage
+                ];
+
+                const matchesSearch = !normalizedSearchQuery || searchableFields.some(value =>
+                    normalizeSearch(value).includes(normalizedSearchQuery)
+                );
                 
                 let matchesDate = true;
                 if (filterDate) {
@@ -1164,10 +1209,10 @@
                     }
                 }
 
+                const matchesRegion = filterRegion ? c.clientRegion === filterRegion : true;
                 const matchesStage = filterStage ? c.stage === filterStage : true;
                 const matchesInterest = filterInterest ? c.interestLevel === filterInterest : true;
-                const matchesRegion = filterRegion ? c.clientRegion === filterRegion : true;
-                return matchesSearch && matchesDate && matchesStage && matchesInterest && matchesRegion;
+                return matchesSearch && matchesDate && matchesRegion && matchesStage && matchesInterest;
             });
 
             renderMetrics();
@@ -1216,7 +1261,11 @@
                 if (c.stage === 'Prospecção') stageBadge = '<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-semibold">Prospecção</span>';
                 else if (c.stage === 'Contato Realizado') stageBadge = '<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-semibold">Contato Feito</span>';
                 else if (c.stage === 'Documentação') stageBadge = '<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-1 rounded-full text-xs font-semibold">Documentação</span>';
-                else stageBadge = '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-semibold">Fechado</span>';
+                else if (c.stage === 'Fechado') stageBadge = '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-semibold">Fechado</span>';
+                else if (c.stage === 'Aprovado') stageBadge = '<span class="bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full text-xs font-semibold">Aprovado</span>';
+                else if (c.stage === 'Reprovado') stageBadge = '<span class="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-full text-xs font-semibold">Reprovado</span>';
+                else if (c.stage === 'Sem Interesse') stageBadge = '<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full text-xs font-semibold">Sem Interesse</span>';
+                else stageBadge = '<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full text-xs font-semibold">' + (c.stage || 'Não informado') + '</span>';
 
                 let historyArr = c.contactsHistory;
                 if (typeof historyArr === 'string') { try { historyArr = JSON.parse(historyArr); } catch(e) { historyArr = []; } }
@@ -1253,12 +1302,10 @@
                     <td class="py-4 px-6 text-slate-700 font-semibold whitespace-nowrap">
                         ${c.clientIncome || 'Não informado'}
                     </td>
-                    <td class="py-4 px-6 text-slate-700 font-medium">
-                        ${c.clientRegion || 'Não informado'}
-                    </td>
-                    <td class="py-4 px-6 text-slate-600">${c.apartmentProfile}</td>
+                    <td class="py-4 px-6 text-slate-700 font-medium">${c.clientRegion || 'Não informado'}</td>
+                    <td class="py-4 px-6 text-slate-600 whitespace-pre-line">${c.observations || 'Não informado'}</td>
                     <td class="py-4 px-6 min-w-[220px]">${historyHtml}</td>
-                    <td class="py-4 px-6 text-xs">
+                    <td class="py-4 px-6 text-xs min-w-[180px]">
                         <div>Nome Limpo: <span class="font-semibold ${c.cleanName === 'Sim' ? 'text-emerald-600' : 'text-red-500'}">${c.cleanName}</span></div>
                         <div>Docs: <span class="font-semibold ${c.documentsSent === 'Sim' ? 'text-emerald-600' : 'text-slate-400'}">${c.documentsSent}</span></div>
                     </td>
@@ -1281,7 +1328,10 @@
                 'Prospecção': { container: 'kanbanProspection', count: 'countProspection', items: [] },
                 'Contato Realizado': { container: 'kanbanContact', count: 'countContact', items: [] },
                 'Documentação': { container: 'kanbanDocs', count: 'countDocs', items: [] },
-                'Fechado': { container: 'kanbanClosed', count: 'countClosed', items: [] }
+                'Fechado': { container: 'kanbanClosed', count: 'countClosed', items: [] },
+                'Aprovado': { container: 'kanbanApproved', count: 'countApproved', items: [] },
+                'Reprovado': { container: 'kanbanRejected', count: 'countRejected', items: [] },
+                'Sem Interesse': { container: 'kanbanNoInterest', count: 'countNoInterest', items: [] }
             };
 
             data.forEach(c => { if (stages[c.stage]) stages[c.stage].items.push(c); });
@@ -1296,7 +1346,7 @@
 
                 stageData.items.forEach(c => {
                     const card = document.createElement('div');
-                    card.className = "bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all space-y-3 cursor-pointer";
+                    card.className = "bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md transition-all space-y-2 cursor-pointer";
                     card.onclick = () => openModal(c.id);
 
                     let interestClass = c.interestLevel === 'Alto' ? 'bg-red-50 text-red-700' : (c.interestLevel === 'Médio' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600');
@@ -1307,9 +1357,9 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${interestClass}">Int. ${c.interestLevel}</span>
                         </div>
                         <div class="text-xs text-brand-700 font-medium">
-                            <i class="fa-solid fa-location-dot mr-1"></i> ${c.clientRegion || 'Região não informada'}
+                            <i class="fa-solid fa-location-dot mr-1"></i> ${c.clientRegion || 'Não informado'}
                         </div>
-                        <p class="text-xs text-slate-600"><i class="fa-solid fa-house text-slate-400 mr-1"></i> ${c.apartmentProfile}</p>
+                        <p class="text-xs text-slate-600"><i class="fa-solid fa-note-sticky text-slate-400 mr-1"></i> ${c.observations || 'Sem observações'}</p>
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                             <span><i class="fa-solid fa-phone text-[10px] mr-1"></i> ${c.contact}</span>
                             <div class="flex space-x-1.5">
